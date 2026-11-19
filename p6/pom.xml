@@ -43,7 +43,6 @@
                 <version>3.1.0</version>
                 <configuration>
                     <executable>java</executable>
-                    <mainClass>com.example.FraudDetectionJob</mainClass>
                     <arguments>
                         <argument>-classpath</argument>
                         <classpath />
