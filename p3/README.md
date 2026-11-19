@@ -41,19 +41,30 @@ Verify all 3 containers are healthy and running:
 docker compose ps
 ```
 
-### Step 2: Run the Consumer in Terminal 1
+### Step 2: Create the Replicated Topic
+Create the `student-events` topic distributed across all 3 brokers with 3 partitions and a replication factor of 3:
+```powershell
+docker exec kafka1 kafka-topics.sh --bootstrap-server kafka1:9092 --create --if-not-exists --topic student-events --partitions 3 --replication-factor 3
+```
+
+Verify topic partition and replica distribution:
+```powershell
+docker exec kafka1 kafka-topics.sh --bootstrap-server kafka1:9092 --describe --topic student-events
+```
+
+### Step 3: Run the Consumer in Terminal 1
 Open a terminal, activate the consumer, and wait for messages:
 ```powershell
 python consumer.py
 ```
 
-### Step 3: Run the Producer in Terminal 2
+### Step 4: Run the Producer in Terminal 2
 In a second terminal, execute the producer to send 10 messages across the cluster:
 ```powershell
 python producer.py
 ```
 
-### Step 4: Tear Down Cluster
+### Step 5: Tear Down Cluster
 When testing is complete, stop and remove containers:
 ```powershell
 docker compose down
