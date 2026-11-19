@@ -27,3 +27,6 @@ spark-temp/
 .spark-staging/
 metastore_db/
 derby.log
+
+# Maven & Build artifacts
+target/

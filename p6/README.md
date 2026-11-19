@@ -36,8 +36,9 @@ In streaming analytics, transactions arrive asynchronously. To detect multi-even
    ```
 3. Compile and execute using Maven:
    ```powershell
-   mvn clean compile exec:java
+   mvn compile exec:exec
    ```
+   *(Note: `exec:exec` is used instead of `exec:java` to prevent Maven in-process classloader isolation issues with Flink's MiniCluster).*
 
 ### Method 2: Using the Python Stream Simulator
 ```powershell
@@ -94,7 +95,13 @@ python fraud_detection.py
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
+                    <executable>java</executable>
                     <mainClass>com.example.FraudDetectionJob</mainClass>
+                    <arguments>
+                        <argument>-classpath</argument>
+                        <classpath />
+                        <argument>com.example.FraudDetectionJob</argument>
+                    </arguments>
                 </configuration>
             </plugin>
         </plugins>
