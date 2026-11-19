@@ -41,7 +41,7 @@ To build an Apache Spark **Structured Streaming** real-time pipeline that ingest
 
 ### Terminal 1 — Start the TCP Socket Server
 ```powershell
-cd Practical_05_Spark_Structured_Streaming
+cd p5
 python socket_sender.py
 ```
 *The server starts on port `9999` and waits for Spark to connect.*
@@ -49,7 +49,7 @@ python socket_sender.py
 ### Terminal 2 — Start the Spark Structured Streaming Application
 In a separate terminal window:
 ```powershell
-cd Practical_05_Spark_Structured_Streaming
+cd p5
 python word_count_stream.py
 ```
 *Spark connects to `localhost:9999` and starts micro-batching.*

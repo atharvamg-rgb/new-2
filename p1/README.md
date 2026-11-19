@@ -32,7 +32,7 @@ In distributed computing, data skew occurs when data is partitioned unevenly acr
 1. Open PowerShell or Command Prompt.
 2. Navigate to the practical directory:
    ```powershell
-   cd Practical_01_Spark_Optimization
+   cd p1
    ```
 3. Run the script:
    ```powershell

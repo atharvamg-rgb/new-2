@@ -26,7 +26,7 @@ In distributed streaming architectures, producer and consumer applications evolv
 
 ### Step 1: Start Kafka & Schema Registry
 ```powershell
-cd Practical_04_Kafka_Schema_Evolution
+cd p4
 docker compose up -d
 ```
 Check status:

@@ -46,7 +46,7 @@ To build an end-to-end real-time analytics pipeline that ingests continuous IoT/
 ### Step 1: Start All Services via Docker Compose
 Open PowerShell or Terminal:
 ```powershell
-cd Practical_10_RealTime_Dashboard_ClickHouse_Grafana
+cd p10
 docker compose up --build
 ```
 *Docker will build the Python microservices and bring up Kafka, ClickHouse, Grafana, producer, and consumer containers.*

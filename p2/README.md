@@ -33,9 +33,9 @@ Delta Lake is an open-source storage layer that brings ACID transactions to Apac
 ## Step-by-Step Execution Instructions
 
 1. Open PowerShell or Command Prompt.
-2. Navigate to `Practical_02_Delta_Lakehouse`:
+2. Navigate to `p2`:
    ```powershell
-   cd Practical_02_Delta_Lakehouse
+   cd p2
    ```
 3. Run the script:
    ```powershell

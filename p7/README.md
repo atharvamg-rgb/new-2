@@ -24,7 +24,7 @@ When an event arrives after its target window has already closed and fired (e.g.
 
 ### Running the Simulator:
 ```powershell
-cd Practical_07_Watermark_Handling_Late_Data
+cd p7
 python late_data_simulation.py
 ```
 

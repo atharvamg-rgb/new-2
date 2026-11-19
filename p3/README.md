@@ -33,7 +33,7 @@ To configure a fault-tolerant **3-broker Apache Kafka cluster** using Docker Com
 ### Step 1: Start the 3-Broker Kafka Cluster
 Open PowerShell or Terminal and run:
 ```powershell
-cd Practical_03_Kafka_Cluster
+cd p3
 docker compose up -d
 ```
 Verify all 3 containers are healthy and running:

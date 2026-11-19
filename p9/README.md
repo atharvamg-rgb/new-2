@@ -28,7 +28,7 @@ JOIN memory.default.courses c ON s.department = c.dept;
 
 ### Step 1: Start MySQL and Trino Coordinator
 ```powershell
-cd Practical_09_Distributed_SQL_Trino
+cd p9
 docker compose up -d
 ```
 Verify containers are up:

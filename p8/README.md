@@ -27,13 +27,13 @@ Where:
 ### Method 1: Python Implementation
 Run the standalone GraphX PageRank script:
 ```powershell
-cd Practical_08_GraphX_PageRank
+cd p8
 python pagerank.py
 ```
 
 ### Method 2: Scala / sbt
 ```powershell
-cd Practical_08_GraphX_PageRank
+cd p8
 sbt run
 ```
 

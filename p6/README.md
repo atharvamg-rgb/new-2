@@ -30,9 +30,9 @@ In streaming analytics, transactions arrive asynchronously. To detect multi-even
 
 ### Method 1: Using Apache Maven (Java Flink)
 1. Open PowerShell / Command Prompt.
-2. Navigate to `Practical_06_Flink_State_Fraud_Detection`:
+2. Navigate to `p6`:
    ```powershell
-   cd Practical_06_Flink_State_Fraud_Detection
+   cd p6
    ```
 3. Compile and execute using Maven:
    ```powershell
