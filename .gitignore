@@ -20,3 +20,10 @@ ENV/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Spark / Delta runtime data
+delta-students/
+spark-temp/
+.spark-staging/
+metastore_db/
+derby.log

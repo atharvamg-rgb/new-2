@@ -7,6 +7,9 @@ from pyspark.sql.functions import explode, split
 # FIX: ensure Spark uses current Python executable
 os.environ["PYSPARK_PYTHON"] = sys.executable
 os.environ["PYSPARK_DRIVER_PYTHON"] = sys.executable
+if "HADOOP_HOME" not in os.environ and os.path.exists(r"C:\hadoop"):
+    os.environ["HADOOP_HOME"] = r"C:\hadoop"
+    os.environ["PATH"] = r"C:\hadoop\bin;" + os.environ.get("PATH", "")
 
 # Ensure writable local temporary directory for Spark checkpointing
 temp_dir = os.path.abspath("./spark-temp")

@@ -5,6 +5,11 @@ import sys
 os.environ["PYSPARK_PYTHON"] = sys.executable
 os.environ["PYSPARK_DRIVER_PYTHON"] = sys.executable
 
+# FIX: ensure HADOOP_HOME and winutils are detected on Windows
+if "HADOOP_HOME" not in os.environ and os.path.exists(r"C:\hadoop"):
+    os.environ["HADOOP_HOME"] = r"C:\hadoop"
+    os.environ["PATH"] = r"C:\hadoop\bin;" + os.environ.get("PATH", "")
+
 from pyspark.sql import SparkSession
 from delta import configure_spark_with_delta_pip
 from delta.tables import DeltaTable
