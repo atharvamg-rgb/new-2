@@ -30,3 +30,15 @@
 - **Storage & Databases:** Delta Lake (Parquet + `_delta_log`), MySQL 8.0, ClickHouse OLAP.
 - **Visualization & Monitoring:** Grafana, Spark Web UI (`:4040`), Trino Web UI (`:8080`).
 - **Containerization:** Docker & Docker Compose.
+
+---
+
+## 🪟 Windows Setup Note (Spark & Hadoop)
+For practicals using Apache Spark (`p1`, `p2`, `p5`), Windows requires native Hadoop utilities (`winutils.exe` & `hadoop.dll`) configured under `HADOOP_HOME`:
+```powershell
+New-Item -ItemType Directory -Path "C:\hadoop\bin" -Force
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/cdarlint/winutils/master/hadoop-3.3.6/bin/winutils.exe" -OutFile "C:\hadoop\bin\winutils.exe"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/cdarlint/winutils/master/hadoop-3.3.6/bin/hadoop.dll" -OutFile "C:\hadoop\bin\hadoop.dll"
+[Environment]::SetEnvironmentVariable("HADOOP_HOME", "C:\hadoop", "User")
+```
+See [Practical 02 Guide](./p2/README.md) for detailed instructions.

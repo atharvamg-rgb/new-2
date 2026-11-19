@@ -21,23 +21,52 @@ Delta Lake is an open-source storage layer that brings ACID transactions to Apac
 ---
 
 ## Prerequisites
-- Python 3.8+
-- Java 8 / 11 / 17 / 21+
-- Install dependencies:
-  ```bash
-  pip install pyspark delta-spark
-  ```
+
+1. **Python & Java:**
+   - Python 3.8+
+   - Java 8 / 11 / 17 / 21+
+
+2. **Python Packages:**
+   ```bash
+   pip install pyspark delta-spark
+   ```
+
+3. **Windows Requirement (`HADOOP_HOME` & `winutils.exe`):**
+   Spark on Windows relies on Hadoop native utilities to manage file permissions (`chmod`). Without these binaries, Spark throws `java.io.FileNotFoundException: HADOOP_HOME and hadoop.home.dir are unset`.
+
+   To set up Hadoop binaries on Windows:
+   ```powershell
+   # 1. Create hadoop directory
+   New-Item -ItemType Directory -Path "C:\hadoop\bin" -Force
+
+   # 2. Download winutils.exe and hadoop.dll
+   Invoke-WebRequest -Uri "https://raw.githubusercontent.com/cdarlint/winutils/master/hadoop-3.3.6/bin/winutils.exe" -OutFile "C:\hadoop\bin\winutils.exe"
+   Invoke-WebRequest -Uri "https://raw.githubusercontent.com/cdarlint/winutils/master/hadoop-3.3.6/bin/hadoop.dll" -OutFile "C:\hadoop\bin\hadoop.dll"
+
+   # 3. Set HADOOP_HOME and update Path (User level)
+   [Environment]::SetEnvironmentVariable("HADOOP_HOME", "C:\hadoop", "User")
+   $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+   if ($userPath -notlike "*C:\hadoop\bin*") {
+       [Environment]::SetEnvironmentVariable("Path", "$userPath;C:\hadoop\bin", "User")
+   }
+   ```
+   *(Note: `practical2.py` also contains an automated fallback that checks and applies `C:\hadoop` directly at runtime).*
 
 ---
 
 ## Step-by-Step Execution Instructions
 
 1. Open PowerShell or Command Prompt.
-2. Navigate to `p2`:
+2. (Optional on current terminal if environment variables were just added):
+   ```powershell
+   $env:HADOOP_HOME = "C:\hadoop"
+   $env:Path = "C:\hadoop\bin;" + $env:Path
+   ```
+3. Navigate to the `p2` directory:
    ```powershell
    cd p2
    ```
-3. Run the script:
+4. Run the script:
    ```powershell
    python practical2.py
    ```
@@ -52,6 +81,11 @@ import sys
 # FIX: make Spark use the same Python executable that runs this script
 os.environ["PYSPARK_PYTHON"] = sys.executable
 os.environ["PYSPARK_DRIVER_PYTHON"] = sys.executable
+
+# FIX: ensure HADOOP_HOME and winutils are detected on Windows
+if "HADOOP_HOME" not in os.environ and os.path.exists(r"C:\hadoop"):
+    os.environ["HADOOP_HOME"] = r"C:\hadoop"
+    os.environ["PATH"] = r"C:\hadoop\bin;" + os.environ.get("PATH", "")
 
 from pyspark.sql import SparkSession
 from delta import configure_spark_with_delta_pip
@@ -146,9 +180,9 @@ After update:
 | id|    name|marks|
 +---+--------+-----+
 |  1|Siddhant|   90|
-|  2|  Shreya|   88|
-|  3|  Shruti|   75|
 |  4| Chinmay|   90|
+|  3|  Shruti|   75|
+|  2|  Shreya|   88|
 |  5|  Vishnu|   88|
 |  6|  Nikita|   80|
 +---+--------+-----+
@@ -158,18 +192,26 @@ Version 0 (before update):
 | id|    name|marks|
 +---+--------+-----+
 |  1|Siddhant|   90|
-|  2|  Shreya|   88|
-|  3|  Shruti|   75|
 |  4| Chinmay|   90|
-|  5|  Vishnu|   88|
 |  6|  Nikita|   75|
+|  3|  Shruti|   75|
+|  2|  Shreya|   88|
+|  5|  Vishnu|   88|
 +---+--------+-----+
 
 Table history:
 +-------+-----------------------+---------+
 |version|timestamp              |operation|
 +-------+-----------------------+---------+
-|1      |2026-10-06 15:21:05.72 |UPDATE   |
-|0      |2026-10-06 15:20:58.351|WRITE    |
+|1      |2026-11-19 23:53:12.762|UPDATE   |
+|0      |2026-11-19 23:52:54.059|WRITE    |
 +-------+-----------------------+---------+
 ```
+
+---
+
+## Troubleshooting (Windows-Specific)
+
+### Issue: `HADOOP_HOME and hadoop.home.dir are unset`
+- **Cause:** Apache Spark requires native Windows Hadoop binaries (`winutils.exe` & `hadoop.dll`) for POSIX permission commands.
+- **Fix:** Follow the steps under [Prerequisites](#prerequisites) to download `winutils.exe` and `hadoop.dll` into `C:\hadoop\bin` and set the `HADOOP_HOME` environment variable.
