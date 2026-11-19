@@ -1,0 +1,13 @@
+{
+  "type": "record",
+  "name": "Patient",
+  "namespace": "com.hospital",
+  "fields": [
+    {"name": "patient_id", "type": "int"},
+    {"name": "patient_name", "type": "string"},
+    {"name": "age", "type": "string"},
+    {"name": "heart_rate", "type": "int"},
+    {"name": "blood_pressure", "type": "string", "default": "Unknown"},
+    {"name": "blood_group", "type": "string"}
+  ]
+}
