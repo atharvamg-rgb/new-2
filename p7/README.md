@@ -110,57 +110,90 @@ if __name__ == "__main__":
 
 ### 2. `latedata.py` (PyFlink Implementation)
 ```python
-from pyflink.common import Types, WatermarkStrategy, Duration, Configuration
-from pyflink.datastream import StreamExecutionEnvironment
-from pyflink.datastream.output_tag import OutputTag
-from pyflink.datastream.window import TumblingEventTimeWindows
-from pyflink.common.time import Time
-from pyflink.common.watermark_strategy import TimestampAssigner
+from pyflink.common import Types
+from pyflink.datastream import StreamExecutionEnvironment, OutputTag
+from pyflink.datastream.functions import KeyedProcessFunction
 
 
-class EventTimeAssigner(TimestampAssigner):
-    def extract_timestamp(self, value, record_timestamp):
-        return value[1]
+class LateDataProcessFunction(KeyedProcessFunction):
+    def __init__(self, window_size=10000, out_of_orderness=2000):
+        self.window_size = window_size
+        self.out_of_orderness = out_of_orderness
+        self.late_tag = OutputTag("late_events", Types.TUPLE([Types.STRING(), Types.LONG()]))
+        self.current_watermark = 0
+        self.windows = {}
+        self.closed_windows = set()
+
+    def process_element(self, value, ctx):
+        name, ts = value
+
+        potential_wm = ts - self.out_of_orderness
+        if potential_wm > self.current_watermark:
+            self.current_watermark = potential_wm
+
+            to_close = [
+                w_end for w_end in self.windows
+                if w_end <= self.current_watermark and w_end not in self.closed_windows
+            ]
+            for w_end in sorted(to_close):
+                events = self.windows[w_end]
+                combined = " + ".join(e[0] for e in events)
+                max_ts = max(e[1] for e in events)
+                yield (combined, max_ts)
+                self.closed_windows.add(w_end)
+
+        if name == "__END__":
+            return
+
+        window_end = ((ts // self.window_size) + 1) * self.window_size
+
+        if window_end in self.closed_windows or ts < self.current_watermark:
+            yield self.late_tag, (name, ts)
+        else:
+            if window_end not in self.windows:
+                self.windows[window_end] = []
+            self.windows[window_end].append((name, ts))
 
 
-env = StreamExecutionEnvironment.get_execution_environment()
-env.set_parallelism(1)
+def run():
+    env = StreamExecutionEnvironment.get_execution_environment()
+    env.set_parallelism(1)
 
-events = [
-    ("Picked up", 1000),
-    ("At restaurant", 8000),
-    ("Delivered", 22000),
-    ("Order confirmed", 3000)
-]
+    events = [
+        ("Picked up", 1000),
+        ("At restaurant", 8000),
+        ("Delivered", 22000),
+        ("Order confirmed", 3000),
+        ("__END__", 99999)
+    ]
 
-data = env.from_collection(events, type_info=Types.TUPLE([Types.STRING(), Types.LONG()]))
+    type_info = Types.TUPLE([Types.STRING(), Types.LONG()])
+    ds = env.from_collection(events, type_info=type_info)
 
-watermarks = WatermarkStrategy.for_bounded_out_of_orderness(
-    Duration.of_seconds(2)
-).with_timestamp_assigner(EventTimeAssigner())
+    proc = LateDataProcessFunction(window_size=10000, out_of_orderness=2000)
 
-stream = data.assign_timestamps_and_watermarks(watermarks)
+    main_stream = (
+        ds.key_by(lambda x: "delivery", key_type=Types.STRING())
+        .process(proc, output_type=type_info)
+    )
 
-late_tag = OutputTag("late_events", Types.TUPLE([Types.STRING(), Types.LONG()]))
+    late_stream = main_stream.get_side_output(proc.late_tag)
 
-windowed = (
-    stream
-    .key_by(lambda event: "delivery", key_type=Types.STRING())
-    .window(TumblingEventTimeWindows.of(Time.seconds(10)))
-    .side_output_late_data(late_tag)
-)
+    main_stream.map(
+        lambda e: "MAIN OUTPUT (window result): " + str(e),
+        output_type=Types.STRING()
+    ).print()
 
-main = windowed.reduce(
-    lambda a, b: (a[0] + " + " + b[0], max(a[1], b[1])),
-    output_type=Types.TUPLE([Types.STRING(), Types.LONG()])
-)
+    late_stream.map(
+        lambda e: "SIDE OUTPUT (late event):   " + str(e),
+        output_type=Types.STRING()
+    ).print()
 
-late = main.get_side_output(late_tag)
+    env.execute("Food Delivery Late Data Processing")
 
-main.map(lambda e: "MAIN OUTPUT (window result): " + str(e), output_type=Types.STRING()).print()
-late.map(lambda e: "SIDE OUTPUT (late event):   " + str(e), output_type=Types.STRING()).print()
 
-env.execute("Food Delivery Late Data (Demo)")
+if __name__ == "__main__":
+    run()
 ```
 
 ---
