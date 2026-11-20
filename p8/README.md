@@ -22,20 +22,44 @@ Where:
 
 ---
 
+## Prerequisites & Setup
+
+### For Method 1: Python (Recommended)
+- **Python 3.8+** (already installed in your environment).
+- **Dependencies:** **None!** Standard library only (`csv`, `os`). Zero extra packages needed.
+
+### For Method 2: Scala / GraphX (Optional)
+- **Java 17 or Java 11 JDK** (configured in `JAVA_HOME`).
+- **sbt (Scala Build Tool):**
+  Install on Windows via PowerShell:
+  ```powershell
+  winget install --id Scala.sbt
+  ```
+
+---
+
 ## Step-by-Step Execution Instructions
 
-### Method 1: Python Implementation
-Run the standalone GraphX PageRank script:
-```powershell
-cd p8
-python pagerank.py
-```
+### Method 1: Python Implementation (Instant & Standalone)
+1. Open PowerShell / Command Prompt / Git Bash.
+2. Navigate to the `p8` directory:
+   ```powershell
+   cd p8
+   ```
+3. Run the script:
+   ```powershell
+   python pagerank.py
+   ```
 
-### Method 2: Scala / sbt
-```powershell
-cd p8
-sbt run
-```
+### Method 2: Scala / sbt (Spark GraphX)
+1. Navigate to the `p8` directory:
+   ```powershell
+   cd p8
+   ```
+2. Compile and run via `sbt`:
+   ```powershell
+   sbt run
+   ```
 
 ---
 
